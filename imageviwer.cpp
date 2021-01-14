@@ -1,20 +1,35 @@
 #include "imageviwer.h"
 
 ImageViwer::ImageViwer(QWidget *parent)
-	: QMainWindow(parent), imageLabel(new QLabel("Hello")), scrollArea(new QScrollArea) {
+	: QMainWindow(parent), imageLabel(new QLabel("No Image Open")), scrollArea(new QScrollArea) {
 
 	imageLabel->setBackgroundRole(QPalette::Base);
-//	imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	imageLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	imageLabel->setScaledContents(true);
 
-	scrollArea->setBackgroundRole(QPalette::Dark);
+	scrollArea->setAlignment(Qt::AlignCenter);
+	scrollArea->setBackgroundRole(QPalette::Base);
+	scrollArea->setWidgetResizable(true);
 	scrollArea->setWidget(imageLabel);
 	scrollArea->setVisible(true);
-//	scrollArea->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 	setCentralWidget(scrollArea);
 
+	createMenus();
+	resize(600, 600);
+//	adjustSize();
+}
+
+ImageViwer::~ImageViwer() {
+	delete imageLabel;
+	delete scrollArea;
+}
+
+
+void ImageViwer::createMenus() {
+	//Grabbing menu pointer
 	QMenuBar *menu = menuBar();
 
+	//Main Menu
 	QMenu *fileMenu = menu->addMenu("File");
 	QMenu *editMenu = menu->addMenu("Edit");
 	QMenu *viewMenu = menu->addMenu("View");
@@ -35,21 +50,13 @@ ImageViwer::ImageViwer(QWidget *parent)
 
 	//Help Menu
 
-
+	//Connecting Actions to functions
 	connect(openAction, &QAction::triggered, this, &ImageViwer::open);
+	connect(saveAction, &QAction::triggered, this, &ImageViwer::save);
+	connect(saveAsAction, &QAction::triggered, this, &ImageViwer::saveAs);
 
 	menu->show();
-
-//	createActions();
-	resize(800, 450);
-
 }
-
-ImageViwer::~ImageViwer() {
-	delete imageLabel;
-	delete scrollArea;
-}
-
 
 //	Slots
 void ImageViwer::open() {
@@ -61,11 +68,19 @@ void ImageViwer::open() {
 	}
 
 	imageLabel->setPixmap(QPixmap::fromImage(image));
+	//Resizes Label
 	imageLabel->adjustSize();
+	//Resizes Window
+	qDebug() << imageLabel->size();
+}
+
+void ImageViwer::save() {
+	image.save(imagePath);
 }
 
 void ImageViwer::saveAs() {
-
+	imagePath = QFileDialog::getSaveFileName(this, "Save as", "./", tr("Images (*.png *.jpg)"));
+	image.save(imagePath);
 };
 
 void ImageViwer::copy() {
@@ -95,10 +110,6 @@ void ImageViwer::fitToImage() {
 void ImageViwer::normalSize() {
 
 };
-
-void ImageViwer::save() {
-
-}
 
 void ImageViwer::about() {
 

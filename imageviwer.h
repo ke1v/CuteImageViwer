@@ -10,6 +10,7 @@
 #include <QMenuBar>
 #include <QGuiApplication>
 #include <QMessageBox>
+#include <QDebug>
 
 /*
  *  Planned Features:
@@ -27,7 +28,6 @@ public:
     ~ImageViwer();
 
 private:
-	void createActions();
 	void createMenus();
 	void updateActions();
 	bool saveFile(const QString &fileName);
